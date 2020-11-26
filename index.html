@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, 
+     user-scalable=0' >
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,700;0,900;1,200;1,500;1,900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="layout-design.css">
+	<title>Timekeeper</title>
+</head>
+<body>
+	<div id="gray-screen"></div>
+	<div id="navigation-bar">
+		<div id="pages">
+			<div id="selector"></div>
+		</div>
+	</div>
+	<div id="container">
+		<div id="sidebar-container">
+			<div id="sidebar">
+				<div id="sidebar-controls">
+					<button id="add-activity" class="text-button"><img class="add-svg" src="assets/add.svg"></button>
+					<button id="change-hide-status" class="text-button"><img class="show-svg" src="assets/show.svg"></button>
+				</div>
+				<div id="activities">
+				</div>
+			</div>
+		</div>
+		<div id="right-side">
+			<div id="total-container">
+				<div id="total-time-container" class="time-box">
+					<div id="total-time" class="time-left">0h 0m 0s</div>
+					<div id="total-break" class="time-right">0h 0m 0s</div>
+					<button id="general-start" class="expanding-button eb-left"><span><img src="assets/play.svg"></span><div>Continue</div></button>
+					<button id="general-break" class="expanding-button eb-right"><span><img src="assets/stop.svg"></span><div>Start Break</div></button>
+				</div>
+				<!-- <div id="total-break-container" class="time-box">
+				</div> -->
+			</div>
+			<div id="sessions">
+			</div>
+		</div>
+		<div id="history">
+			<input id="history-date" type="date" name="history-date-name">
+			<div id="history-sessions"></div>
+			<div id="history-activities"></div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="morphdom/dist/morphdom.js"></script>
+<script type="text/javascript" src="javascript/layout-design.js"></script>
+<script type="text/javascript" src="javascript/functions.js"></script>
+<script type="text/javascript" src="javascript/classes.js"></script>
+<script type="text/javascript" src="javascript/history-classes.js"></script>
+<script type="text/javascript" src="javascript/script.js"></script>
+</html>
+
