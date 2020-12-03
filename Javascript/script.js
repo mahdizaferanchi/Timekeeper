@@ -5,6 +5,8 @@ historySessionsElement = document.getElementById('history-sessions')
 historyActivitiesElement = document.getElementById('history-activities')
 totalTimeElement = document.getElementById('total-time')
 grayScreenElement = document.getElementById('gray-screen')
+let root = document.documentElement
+continueButton = document.getElementById("general-start").getElementsByTagName('div')[0]
 
 storage = window.localStorage
 
@@ -20,6 +22,7 @@ todayDate = new Date()
 yesterdayDate = new Date(todayDate.getTime() - 1000*60*60*24)
 todayString = todayDate.getFullYear() + '-' + todayDate.getMonth() + '-' + todayDate.getDate()
 yesterdayString = yesterdayDate.getFullYear() + '-' + (yesterdayDate.getMonth()+1).toString().padStart(2, '0') + '-' + yesterdayDate.getDate().toString().padStart(2, '0')
+yesterdayDateString = yesterdayDate.getFullYear() + '-' + (yesterdayDate.getMonth()).toString().padStart(2, '0') + '-' + yesterdayDate.getDate().toString()
 showHiddenActivities = false
 
 
@@ -76,10 +79,15 @@ document.getElementById('history-date').setAttribute('max', yesterdayString)
 document.getElementById('history-date').onchange = (e) => {
 		if (e.target.checkValidity()) {
 			var fields = e.target.value.split('-')
-			var dateString = [fields[0], String(Number(fields[1]) - 1), String(Number(fields[2]))].join('-')
+			var dateString = [fields[0], String(Number(fields[1])-1), String(Number(fields[2]))].join('-')
+			console.log(dateString)
 			initializeHistorySessions(dateString)
 		}else{
-			console.log('Invalid Date')
+			// console.log('Invalid Date')
+			historyActivitiesElement.innerHTML = ''
+			historySessionsElement.innerHTML = `<div class="no-content">
+			Invalid Date.
+			</div>`
 		}
 }
 
@@ -87,8 +95,10 @@ activitiesElement.append(breakElement())
 
 initializeActivities()
 initializeSessions()
-renderGerenalButtons()
-// initializeHistorySessions()
+renderGeneralButtons()
+initializeHistorySessions()
+document.getElementById('history-date').value = yesterdayString
+state = 'SAFE'
 
 intervalRunning =  0 
 

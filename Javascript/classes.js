@@ -18,9 +18,9 @@ class Activity{
 				var createdSession = new Session(this)
 				sessionsElement.prepend(createdSession.sessionElement)
 				renderActivities()				
+				sessions.push(createdSession)
+				startInterval()
 				setTimeout(() => {
-					startInterval()
-					sessions.push(createdSession)
 					renderSessions()
 				}, 410)
 			}
@@ -147,7 +147,15 @@ class Session{
 				}
 			})
 		}
+		document.getElementById(`session-${this.identifier}-initiate-delete`).onclick = () => {
+			document.getElementById(`session-${this.identifier}-delete-dialogue`).style.left = 0
+		}
+		document.getElementById(`session-${this.identifier}-cancel-delete`).onclick = () => {
+			document.getElementById(`session-${this.identifier}-delete-dialogue`).style.left = "100%"
+		}
 	}
+
+
 	attachEditButton(){
 		document.getElementById(`session-${this.identifier}-edit`).onclick = () => {
 			//session edit button handler:
@@ -207,31 +215,37 @@ class Session{
 		result.id = `session-${this.identifier}`
 		result.className = 'session'
 		result.innerHTML = 
-			`<div class="delete-dialogue"></div>
-				<div class="session-name">${this.activity.name}</div>
-				<div class="session-details">
-					<div class="session-fromto">
-						<div class="align extra-text">
-							from &nbsp;
-						</div>
-						<div class="align hover-b">
-							${getTimeString12h(this.start)}
-						</div>
-						<div class="align extra-text">
-							to &nbsp;
-						</div>
-						<div class="align hover-b">
-							${getTimeString12h(this.end)}
-						</div>
+			`<div class="delete-dialogue" id="session-${this.identifier}-delete-dialogue">
+				 <div>Delete this session?</div>
+				 <div>
+					<button id="session-${this.identifier}-delete" class="delete-confirm delete-option">Delete</button>
+					 <button id="session-${this.identifier}-cancel-delete" class="delete-cancel delete-option">Cancel</button>
+				</div>
+			 </div>
+			<div class="session-name">${this.activity.name}</div>
+			<div class="session-details">
+				<div class="session-fromto">
+					<div class="align extra-text">
+						from &nbsp;
 					</div>
-					<div class="session-for">
-						<span class="extra-text">for &nbsp;</span><span id="session-${this.identifier}-duration" class="hover-b">${getTimeDurationString(this.duration)}</span>
+					<div class="align hover-b">
+						${getTimeString12h(this.start)}
 					</div>
-					<div class="session-controls">
-						<button class="edit-session" id="session-${this.identifier}-edit"><img class="icon-s" src="assets/edit.svg"></button>
-						<button class="delete-session" id="session-${this.identifier}-delete"><img class="icon-s" src="assets/delete.svg"></button>
+					<div class="align extra-text">
+						to &nbsp;
 					</div>
-				</div>`
+					<div class="align hover-b">
+						${getTimeString12h(this.end)}
+					</div>
+				</div>
+				<div class="session-for">
+					<span class="extra-text">for &nbsp;</span><span id="session-${this.identifier}-duration" class="hover-b">${getTimeDurationString(this.duration)}</span>
+				</div>
+				<div class="session-controls">
+					<button class="edit-session" id="session-${this.identifier}-edit"><img class="icon-s" src="assets/edit.svg"></button>
+					<button class="delete-session" id="session-${this.identifier}-initiate-delete"><img class="icon-s" src="assets/delete.svg"></button>
+				</div>
+			</div>`
 		el.append(result)
 		return el
 	}

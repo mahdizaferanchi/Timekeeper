@@ -82,6 +82,12 @@ function appendHistorySession(session){
 }
 
 function renderActivities(){
+	if (activities.length == 0) {
+		activitiesElement.innerHTML = `<div class="no-content">
+			You have not created any activities yet. Press the '+' button to create an activity.
+			</div>`
+		return;
+	}
 	var activitiesElementVirtual = activitiesElement.cloneNode()
 	activitiesElementVirtual.append(breakElement())
 	activities.forEach((a) => {
@@ -100,11 +106,23 @@ function renderActivities(){
 	attachBreakButton()
 }
 
-function renderGerenalButtons(){
+function getTextWidth(text) {
+	var test = continueButton
+	test.innerHTML = text;
+    return (test.clientWidth + 1);
+}
+
+function renderGeneralButtons(){
 	var sessionsf = sessions.filter(s => s.activity != _break_)
 	if (sessionsf.length) {
 		var target = sessionsf[sessionsf.length - 1].activity.name
-		document.getElementById("general-start").getElementsByTagName('div')[0].innerHTML = target
+		root.style.setProperty('--eb-left-width', (getTextWidth(target) + 40) + 'px')
+		continueButton.innerHTML = target
+		if (_break_.active) {
+			document.getElementById('break-button-text').innerHTML = 'End Break'
+		}else{
+			document.getElementById('break-button-text').innerHTML = 'Start Break'
+		}
 		if (sessionsf[sessionsf.length - 1].activity.active) {
 			document.getElementById("general-start").firstChild.firstChild.src = "assets/pause.svg"
 		}else{
@@ -113,6 +131,7 @@ function renderGerenalButtons(){
 	}else{
 		if (activities[0]) {
 			var target = activities[0].name
+			root.style.setProperty('--eb-left-width', (getTextWidth(target) + 40) + 'px')
 			document.getElementById("general-start").getElementsByTagName('div')[0].innerHTML = target
 			document.getElementById("general-start").firstChild.firstChild.src = "assets/play.svg"
 		}
@@ -121,7 +140,15 @@ function renderGerenalButtons(){
 }
 
 function renderSessions(){
+	if (sessions.length == 0) {
+		sessionsElement.innerHTML = `<div class="no-content">
+			No sessions have been created today. Press the play button of one of your activities to start a session.
+			</div>`
+		renderGeneralButtons()
+		return;
+	}
 	var sessionsElementVirtual = sessionsElement.cloneNode()
+	sessionsElementVirtual.innerHTML = ''
 	sessions.forEach((s) => {
 		sessionsElementVirtual.prepend(s.sessionElement)
 	})
@@ -131,7 +158,7 @@ function renderSessions(){
 		s.attachDeleteButton()
 		s.attachEditButton()
 	})
-	renderGerenalButtons()
+	renderGeneralButtons()
 }
 
 // function renderSessions(){
@@ -152,6 +179,7 @@ function renderHistorySessions(){
 	historySessions.forEach((s) => {
 		appendHistorySession(s)
 	})
+	historySessions[0].syncAllSessions()
 }
 
 function renderHistoryActivities(){
@@ -191,11 +219,31 @@ function refreshTimers(){
 	totalBreak = round(totalBreak)
 	totalTimeElement.innerHTML = getTimeDurationString(totalTime)
 	document.getElementById('total-break').innerHTML = getTimeDurationString(totalBreak)
-	document.getElementById('break-time').innerHTML = getTimeDurationString(totalBreak)
+	// document.getElementById('break-time').innerHTML = getTimeDurationString(totalBreak)
+	var newState = 'SAFE'
+	if (totalBreak < 1000*60 && _break_.active) {
+		newState = 'WARNNING'
+	}
+	if (totalBreak < 0) {
+		newState = 'DANGER'
+	}
+	if (state != newState) {
+		if (newState == 'DANGER') {
+			root.style.setProperty('--break-text-color', 'red')
+		}
+		if (newState == 'WARNNING') {
+			root.style.setProperty('--break-text-color', 'orange')
+		}
+		if (newState == 'SAFE') {
+			root.style.setProperty('--break-text-color', 'black')
+		}
+		state = newState
+	}
 }
 
 function initializeActivities(){
 	var response = JSON.parse(storage.getItem('activities')) || []
+	// response = []
 	response.forEach((a) => {
 		activities.push(new Activity(a.name, a.restRatio, a.active, a.identifier, a.hidden))
 		historyActivities.push(new HistoryActivity(a.name, a.restRatio, a.identifier))
@@ -205,6 +253,7 @@ function initializeActivities(){
 
 function initializeSessions(){
 	var response = JSON.parse(storage.getItem(todayString)) || []
+	// response = []
 	response.forEach((s) => {
 		var correctActivity = activities.find(a => a.identifier == s.activity.identifier)
 		if (s.activity.identifier == '1') {
@@ -218,7 +267,7 @@ function initializeSessions(){
 	renderActivities()
 }
 
-function initializeHistorySessions(date=todayString){
+function initializeHistorySessions(date=yesterdayDateString){
 	var response = JSON.parse(storage.getItem(date)) || []
 	historySessions = []
 	response.forEach((s, i) => {
@@ -259,12 +308,11 @@ function stop(){
 
 function breakElement(){
 	var result = document.createElement('div')
-	result.className = 'activity' + (_break_.active ? ' active': '')
+	result.className = 'activity' + (_break_.active ? ' bactive': '')
 	result.id = 'break'
 	result.innerHTML = 
-		`<div id="break-text" class="activity-name">Break</div>
-		<div id="break-time" class="activity-time">${getTimeDurationString(totalBreak)}</div>
-		<button id="break-start" class="play"><img class="icon" src=${_break_.active ? 'assets/pause.svg' : 'assets/play.svg'}></button>`	
+		`<div id="break-text">Break</div>
+		<button id="break-start" class="play"><img class="icon" src=assets/stop.svg></button>`	
 	return result
 }
 

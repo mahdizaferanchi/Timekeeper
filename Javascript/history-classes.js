@@ -56,6 +56,12 @@ class HistorySession{
 				}
 			})
 		}
+		document.getElementById(`history-session-${this.identifier}-initiate-delete`).onclick = () => {
+			document.getElementById(`history-session-${this.identifier}-delete-dialogue`).style.left = 0
+		}
+		document.getElementById(`history-session-${this.identifier}-cancel-delete`).onclick = () => {
+			document.getElementById(`history-session-${this.identifier}-delete-dialogue`).style.left = "100%"
+		}
 	}
 	attachEditButton(){
 		document.getElementById(`history-session-${this.identifier}-edit`).onclick = () => {
@@ -96,7 +102,6 @@ class HistorySession{
 					this.activity.active = false
 				}
 				this.description = document.getElementById(`history-session-${this.identifier}-description-edit`).value
-				storage.setItem(this.dateString, JSON.stringify(historySessions))
 				renderHistorySessions()
 				renderHistoryActivities()
 				hideMiddleWindow()
@@ -111,31 +116,37 @@ class HistorySession{
 		result.id = `history-session-${this.identifier}`
 		result.className = 'session'
 		result.innerHTML = 
-			`<div class="delete-dialogue"></div>
-				<div class="session-name">${this.activity.name}</div>
-				<div class="session-details">
-					<div class="session-fromto">
-						<div class="align extra-text">
-							from &nbsp;
-						</div>
-						<div class="align hover-b">
-							${getTimeString12h(this.start)}
-						</div>
-						<div class="align extra-text">
-							to &nbsp;
-						</div>
-						<div class="align hover-b">
-							${getTimeString12h(this.end)}
-						</div>
+			`<div class="delete-dialogue" id="history-session-${this.identifier}-delete-dialogue">
+				 <div>Delete this session?</div>
+				 <div>
+					<button id="history-session-${this.identifier}-delete" class="delete-confirm delete-option">Delete</button>
+					 <button id="history-session-${this.identifier}-cancel-delete" class="delete-cancel delete-option">Cancel</button>
+				</div>
+			 </div>
+			<div class="session-name">${this.activity.name}</div>
+			<div class="session-details">
+				<div class="session-fromto">
+					<div class="align extra-text">
+						from &nbsp;
 					</div>
-					<div class="session-for">
-						<span class="extra-text">for &nbsp;</span><span id="history-session-${this.identifier}-duration" class="hover-b">${getTimeDurationString(this.duration)}</span>
+					<div class="align hover-b">
+						${getTimeString12h(this.start)}
 					</div>
-					<div class="session-controls">
-						<button class="edit-session" id="history-session-${this.identifier}-edit"><img class="icon-s" src="assets/edit.svg"></button>
-						<button class="delete-session" id="history-session-${this.identifier}-delete"><img class="icon-s" src="assets/delete.svg"></button>
+					<div class="align extra-text">
+						to &nbsp;
 					</div>
-				</div>`
+					<div class="align hover-b">
+						${getTimeString12h(this.end)}
+					</div>
+				</div>
+				<div class="session-for">
+					<span class="extra-text">for &nbsp;</span><span id="history-session-${this.identifier}-duration" class="hover-b">${getTimeDurationString(this.duration)}</span>
+				</div>
+				<div class="session-controls">
+					<button class="edit-session" id="history-session-${this.identifier}-edit"><img class="icon-s" src="assets/edit.svg"></button>
+					<button class="delete-session" id="history-session-${this.identifier}-initiate-delete"><img class="icon-s" src="assets/delete.svg"></button>
+				</div>
+			</div>`
 		return result
 	}
 	get endTime(){
@@ -157,5 +168,8 @@ class HistorySession{
 	endSession(){
 		this.end = new Date()
 		this.activity.active = false
+	}
+	syncAllSessions(){
+		storage.setItem(this.dateString, JSON.stringify(historySessions))
 	}
 }
